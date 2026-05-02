@@ -8,7 +8,7 @@ void UConquestSubsystem::TravelToConquestLevel()
 {
 	if (UWorld* World = GetWorld())
 	{
-		World->ServerTravel(TEXT("Conquest"));
+		World->ServerTravel(TEXT("/Game/Levels/Conquest/Conquest"));
 	}
 }
 

@@ -2,6 +2,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSubsystemUtils.h"
 #include "OnlineSessionSettings.h"
+#include "Online/OnlineSessionNames.h"
 #include "Kismet/GameplayStatics.h"
 
 void UProtoRTSOnlineSubsystem::CreateSession(int32 MaxPlayers, bool bIsLAN)
@@ -18,6 +19,9 @@ void UProtoRTSOnlineSubsystem::CreateSession(int32 MaxPlayers, bool bIsLAN)
 	Settings.bIsLANMatch = bIsLAN;
 	Settings.bShouldAdvertise = true;
 	Settings.bUsesPresence = true;
+	Settings.bUseLobbiesIfAvailable = true;
+	Settings.bAllowJoinInProgress = true;
+	Settings.bAllowJoinViaPresence = true;
 
 	OnCreateSessionCompleteDelegateHandle = Sessions->AddOnCreateSessionCompleteDelegate_Handle(FOnCreateSessionCompleteDelegate::CreateUObject(this, &UProtoRTSOnlineSubsystem::OnCreateSessionCompleteInternal));
 
@@ -36,7 +40,10 @@ void UProtoRTSOnlineSubsystem::FindSessions(int32 MaxSearchResults, bool bIsLAN)
 	SessionSearch = MakeShared<FOnlineSessionSearch>();
 	SessionSearch->MaxSearchResults = MaxSearchResults;
 	SessionSearch->bIsLanQuery = bIsLAN;
-	//SessionSearch->QuerySettings.Set(FName(TEXT("SEARCH_PRESENCE")), true, EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(FName(TEXT("PRESENCESEARCH")), true, EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+	SessionSearch->QuerySettings.Set(FName(TEXT("LOBBYSEARCH")), true, EOnlineComparisonOp::Equals);
 
 	OnFindSessionsCompleteDelegateHandle = Sessions->AddOnFindSessionsCompleteDelegate_Handle(FOnFindSessionsCompleteDelegate::CreateUObject(this, &UProtoRTSOnlineSubsystem::OnFindSessionsCompleteInternal));
 
@@ -159,6 +166,9 @@ void UProtoRTSOnlineSubsystem::OnJoinSessionCompleteInternal(FName SessionName, 
 		Sessions->GetResolvedConnectString(SessionName, ConnectInfo);
 	}
 
+	// Log the resolved connect string for debugging before broadcasting/travel
+	UE_LOG(LogTemp, Warning, TEXT("[ProtoRTSOnlineSubsystem] Resolved connect string for session '%s': '%s'"), *SessionName.ToString(), *ConnectInfo);
+
 	bool bWasSuccessful = (Result == EOnJoinSessionCompleteResult::Success);
 	OnJoinSessionComplete.Broadcast(bWasSuccessful, ConnectInfo);
 
@@ -167,6 +177,12 @@ void UProtoRTSOnlineSubsystem::OnJoinSessionCompleteInternal(FName SessionName, 
 		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 		if (PC)
 		{
+			// Append the lobby map to the connect string to ensure we join at the correct level
+			//FString LobbyMap = TEXT("/Game/Levels/Lobby/Default/Lobby");
+			//FString TravelURL = FString::Printf(TEXT("%s?map=%s"), *ConnectInfo, *LobbyMap);
+
+			// Also log that we'll attempt to travel
+			UE_LOG(LogTemp, Warning, TEXT("[ProtoRTSOnlineSubsystem] Attempting ClientTravel to '%s'"), *ConnectInfo);
 			PC->ClientTravel(ConnectInfo, ETravelType::TRAVEL_Absolute);
 		}
 	}
