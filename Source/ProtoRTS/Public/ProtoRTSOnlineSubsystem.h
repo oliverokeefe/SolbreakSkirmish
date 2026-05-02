@@ -17,16 +17,16 @@ struct FSessionResultInfo
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, Category = "Online|Session")
-	FString SessionName;
+	FString SessionName = "";
 
 	UPROPERTY(BlueprintReadOnly, Category = "Online|Session")
-	FString SessionId;
+	FString SessionId = "";
 
 	UPROPERTY(BlueprintReadOnly, Category = "Online|Session")
-	int32 Index;
+	int32 Index = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Online|Session")
-	FString HostName;
+	FString HostName = "";
 
 	UPROPERTY(BlueprintReadOnly, Category = "Online|Session")
 	int32 CurrentPlayers = 0;
