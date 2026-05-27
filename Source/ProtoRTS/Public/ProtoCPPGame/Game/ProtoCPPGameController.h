@@ -14,4 +14,11 @@ class PROTORTS_API AProtoCPPGameController : public AProtoCPPSessionController
 {
 	GENERATED_BODY()
 	
+
+public:
+	void BoxSelect(const FVector& StartPoint, const FVector& EndPoint);
+
+	void FindActorsInSelectionBox(const FVector& StartPoint, const FVector& EndPoint, TArray<AActor*>& OutActors) const;
+
+
 };
