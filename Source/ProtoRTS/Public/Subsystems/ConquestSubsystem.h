@@ -22,6 +22,9 @@ struct FConquestSettings
 	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
 	bool bRegicideWinConEnabled = true;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	TSoftObjectPtr<UWorld> Map = TSoftObjectPtr<UWorld>(FSoftObjectPath(TEXT("/Game/Levels/Conquest/ConquestSolStation.ConquestSolStation")));
+
 	// Add future lobby configuration fields here (e.g., allowed maps, friendly fire, etc.)
 };
 
@@ -37,9 +40,11 @@ public:
 
 	/**
 	 * Performs a server travel to the Conquest level
+	 * 
+	 * NOTE: Note _really_ meant to be called directly, call through LaunchConquestMatch() instead, which will save the match settings to the subsystem before traveling to the level.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Conquest")
-	void TravelToConquestLevel();
+	void TravelToConquestLevel(TSoftObjectPtr<UWorld> ConquestLevel);
 
 	/**
 	 * Saves the provided match settings to the subsystem, resets scores, and travels to the conquest level to start a new match.
@@ -48,15 +53,21 @@ public:
 	void LaunchConquestMatch(FConquestSettings MatchSettings);
 
 	/**
-	 * Handles logic for launching the appropriate phase for the next round in a match of Conquest
+	 * Handles logic for launching the appropriate phase for the next round in a match of Conquest.
+	 * 
+	 * Deprecated: Conquest Maps are now meant to be contained in a single level. Rounds and match resets included.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Conquest")
+	UE_DEPRECATED(5.6, "Conquest Maps are now meant to be contained in a single level. Rounds and match resets included.")
 	void LaunchConquestNextRound();
 
 	/**
 	 * Resets scores and travels to the conquest level to start a new match with the same settings (rematch).
+	 * 
+	 * Deprecated: Conquest Maps are now meant to be contained in a single level. Rounds and match resets included.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Conquest")
+	UE_DEPRECATED(5.6, "Conquest Maps are now meant to be contained in a single level. Rounds and match resets included.")
 	void LaunchConquestRematch();
 
 
@@ -74,6 +85,9 @@ public:
 	/** Allow regicide win condition*/
 	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
 	bool bRegicideWinConEnabled = true;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	TSoftObjectPtr<UWorld> Map = TSoftObjectPtr<UWorld>(FSoftObjectPath(TEXT("/Game/Levels/Conquest/ConquestSolStation.ConquestSolStation")));
 
 	/** Save match configuration settings */
 	UFUNCTION(BlueprintCallable, Category = "Conquest|Config")
