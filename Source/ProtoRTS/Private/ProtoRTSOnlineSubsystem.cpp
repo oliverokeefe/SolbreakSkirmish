@@ -235,3 +235,26 @@ IOnlineSessionPtr UProtoRTSOnlineSubsystem::GetSessionInterface() const
 	return Online::GetSessionInterface(GetWorld());
 
 }
+
+FString UProtoRTSOnlineSubsystem::GetCurrentSessionLobbyName() const
+{
+	IOnlineSessionPtr Sessions = GetSessionInterface();
+	if (!Sessions.IsValid())
+	{
+		return FString();
+	}
+
+	// Get the current session info
+	FNamedOnlineSession* Session = Sessions->GetNamedSession(FName(TEXT("NAME_GameSession")));
+	if (!Session)
+	{
+		return FString();
+	}
+
+	// Try to get the lobby name from session settings
+	FString LobbyName;
+	Session->SessionSettings.Get(FName("LOBBY_NAME"), LobbyName);
+	
+	// If no lobby name is set, return empty string
+	return LobbyName;
+}
