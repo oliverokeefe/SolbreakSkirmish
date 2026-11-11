@@ -8,24 +8,25 @@
 
 /** Lobby configuration for the Conquest match. Expand this as more settings are required. */
 USTRUCT(BlueprintType)
-struct FConquestSettings
+struct FConquestSettings : public FTableRowBase
 {
 	GENERATED_BODY()
 
 	/** Score required to win the match */
-	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
-	int32 ScoreToWin = 4;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conquest|Config")
+	int32 ScoreToWin = 6;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conquest|Config")
+	bool bAlternateObjectivesEnabled = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conquest|Config")
+	bool bCaptureZonesEnabled = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conquest|Config")
 	int32 CapturePointsToWin = 100;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conquest|Config")
 	bool bRegicideWinConEnabled = true;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
-	TSoftObjectPtr<UWorld> Map = TSoftObjectPtr<UWorld>(FSoftObjectPath(TEXT("/Game/Levels/Conquest/ConquestSolStation.ConquestSolStation")));
-
-	// Add future lobby configuration fields here (e.g., allowed maps, friendly fire, etc.)
 };
 
 /**
@@ -50,7 +51,7 @@ public:
 	 * Saves the provided match settings to the subsystem, resets scores, and travels to the conquest level to start a new match.
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Conquest")
-	void LaunchConquestMatch(FConquestSettings MatchSettings);
+	void LaunchConquestMatch(FName TargetMapRowName, TSoftObjectPtr<UWorld> TargetMap, FConquestSettings MatchSettings);
 
 	/**
 	 * Handles logic for launching the appropriate phase for the next round in a match of Conquest.
@@ -72,11 +73,28 @@ public:
 
 
 
+	/** Name data table row for the map to be used for the match */
+	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	FName MapRowName = FName(TEXT("ConquestSolStation"));
+
+	/** The map to be used for the match */
+	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	TSoftObjectPtr<UWorld> Map;
+
+
 	// -- Lobby configuration that should be saved in the subsystem --
 
 	/** Score required to win the match */
 	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
-	int32 ScoreToWin = 4;
+	int32 ScoreToWin = 6;
+
+	/** Allow alternate objectives to be enabled */
+	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	bool bAlternateObjectivesEnabled = true;
+
+	/** Whether capture zones are enabled in the match */
+	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
+	bool bCaptureZonesEnabled = true;
 
 	/** Capture points needed to win a round */
 	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
@@ -86,12 +104,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
 	bool bRegicideWinConEnabled = true;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Conquest|Config")
-	TSoftObjectPtr<UWorld> Map = TSoftObjectPtr<UWorld>(FSoftObjectPath(TEXT("/Game/Levels/Conquest/ConquestSolStation.ConquestSolStation")));
 
 	/** Save match configuration settings */
 	UFUNCTION(BlueprintCallable, Category = "Conquest|Config")
-	void SaveMatchConfigurationSettings(FConquestSettings MatchSettings);
+	void SaveMatchConfigurationSettings(FName TargetMapRowName, TSoftObjectPtr<UWorld> TargetMap, FConquestSettings MatchSettings);
 
 
 

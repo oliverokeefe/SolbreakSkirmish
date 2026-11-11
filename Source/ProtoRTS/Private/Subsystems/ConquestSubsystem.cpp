@@ -13,9 +13,9 @@ void UConquestSubsystem::TravelToConquestLevel(TSoftObjectPtr<UWorld> ConquestLe
 	}
 }
 
-void UConquestSubsystem::LaunchConquestMatch(FConquestSettings MatchSettings)
+void UConquestSubsystem::LaunchConquestMatch(FName TargetMapRowName, TSoftObjectPtr<UWorld> TargetMap, FConquestSettings MatchSettings)
 {
-	SaveMatchConfigurationSettings(MatchSettings);
+	SaveMatchConfigurationSettings(TargetMapRowName, TargetMap, MatchSettings);
 	ResetRoundsWon();
 	TravelToConquestLevel(Map);
 }
@@ -38,13 +38,15 @@ void UConquestSubsystem::LaunchConquestRematch()
 	TravelToConquestLevel(Map);
 }
 
-void UConquestSubsystem::SaveMatchConfigurationSettings(FConquestSettings MatchSettings)
+void UConquestSubsystem::SaveMatchConfigurationSettings(FName TargetMapRowName, TSoftObjectPtr<UWorld> TargetMap, FConquestSettings MatchSettings)
 {
+	MapRowName = TargetMapRowName;
+	Map = TargetMap;
 	ScoreToWin = MatchSettings.ScoreToWin;
+	bCaptureZonesEnabled = MatchSettings.bCaptureZonesEnabled;
 	CapturePointsToWin = MatchSettings.CapturePointsToWin;
 	bRegicideWinConEnabled = MatchSettings.bRegicideWinConEnabled;
-	Map = MatchSettings.Map;
-	// Apply other config fields when added.
+	bAlternateObjectivesEnabled = MatchSettings.bAlternateObjectivesEnabled;
 }
 
 int32 UConquestSubsystem::GetRoundsWon(int32 TeamId) const

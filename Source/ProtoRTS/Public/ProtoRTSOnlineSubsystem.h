@@ -80,6 +80,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Online|Session")
 	void GetSessionSearchResults(TArray<FSessionResultInfo>& OutResults);
 
+	UFUNCTION(BlueprintCallable, Category = "Online|Session")
+	FString GetCurrentSessionLobbyName() const;
+
 protected:
 	// Internal handlers
 	void OnCreateSessionCompleteInternal(FName SessionName, bool bWasSuccessful);
